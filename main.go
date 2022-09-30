@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -21,11 +20,14 @@ func main() {
 	config.Client, _ = mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 	err := config.Client.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer config.Client.Disconnect(ctx)
 	router := mux.NewRouter()
-	router.HandleFunc("/show", show.CreateShowEndpoint).Methods("POST")
+	router.HandleFunc("/addticket{id}/{amt}", show.AddTicketHolderEndpoint).Methods("POST")
+	router.HandleFunc("/getticket{id}", show.GetTicketHolderByID).Methods("GET")
+	router.HandleFunc("/getalltickets{id}", show.GetTicketHolders).Methods("GET")
+	router.HandleFunc("/createshow", show.CreateShowEndpoint).Methods("POST")
 	router.HandleFunc("/getshows", show.GetShowsEndpoint).Methods("GET")
 	router.HandleFunc("/getshow{id}", show.GetShowByIdEndpoint).Methods("GET")
 	router.HandleFunc("/updateshow{id}", show.UpdateShowEndpoint).Methods("POST")
